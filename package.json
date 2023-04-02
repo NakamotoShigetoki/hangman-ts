@@ -1,16 +1,20 @@
 {
   "name": "hangman",
   "version": "1.0.0",
-  "description": "",
+  "description": " Simple Hangman game made with TypeScript",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "node index.js"
+    "start": "node dist/index.js"
   },
-  "keywords": [],
-  "author": "",
+  "keywords": ["hangman", "game", "nodejs"],
+  "engines": {
+    "node": ">=17.0.0"
+  },
+  "author": "NakamotoShigetoki",
   "license": "ISC",
   "devDependencies": {
-    "@types/node": "^18.15.11"
+    "@types/node": "^18.15.11",
+    "typescript": "^5.0.3"
   }
 }
