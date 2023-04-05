@@ -20,6 +20,12 @@ export class GameManager {
         this.startGame().then(); // IDE complains about not awaiting, but we can't await here (constructor)
     }
 
+    private flush() {
+        this.stepsLeft = config.steps;
+        this.word = [];
+        this.alreadyGuessed = new Set<string>()
+    }
+
     public static get instance(): GameManager {
         if (!GameManager._instance) {
             GameManager._instance = new GameManager();
@@ -54,24 +60,19 @@ export class GameManager {
     }
 
     private async initWord(word: string): Promise<void> {
-        for (let i = 0; i < word.length; i++) {
+        Array.from(word).forEach((letter) => {
             this.word.push({
-                letter: word[i],
-                status: false
+                letter: letter,
+                status: letter == ' '
             });
-        }
+        });
     }
 
-    private async printWord(): Promise<string> {
-        let word = '';
-        for (let i = 0; i < this.word.length; i++) {
-            if (this.word[i].status) {
-                word += this.word[i].letter;
-            } else {
-                word += '_';
-            }
-        }
-        return word;
+    private async printWord(end = false): Promise<string> {
+        if(end)
+            return this.word.map((letter) => letter.letter).join('');
+        else
+            return this.word.map((letter) => letter.status ? letter.letter : '_').join('');
     }
 
     private async checkLetter(letter: string): Promise<boolean> {
@@ -94,9 +95,9 @@ export class GameManager {
         return this.stepsLeft === 0;
     }
 
-    private async printStatus(): Promise<void> {
+    private async printStatus(end = false): Promise<void> {
         console.clear();
-        console.log(`${generateFrame(this.stepsLeft, await this.printWord())}\n`);
+        console.log(`${generateFrame(this.stepsLeft, await this.printWord(end))}\n`);
     }
 
     // I need to say the user if they already guessed the letter
@@ -118,19 +119,18 @@ export class GameManager {
             await this.play(GameStatus.ALREADY_GUESSED);
         }
         if (!await this.checkLetter(letter)) {
+            this.alreadyGuessed.add(letter.toLowerCase());
             this.stepsLeft--;
         }
         if (await this.checkWin()) {
-            await this.printStatus();
+            await this.printStatus(true);
             console.log('You win!');
-            process.exit();
-            return; // Should be unreachable
+            return;
         }
         if (await this.checkLose()) {
-            await this.printStatus();
+            await this.printStatus(true);
             console.log('You lose!');
-            process.exit();
-            return; // Should be unreachable
+            return;
         }
         await this.play(GameStatus.OK);
     }
@@ -139,5 +139,20 @@ export class GameManager {
         let word = await this.chooseWord();
         await this.initWord(word);
         await this.play();
+        let letter = await this.ask("Do you want to play again? (y/N) ");
+        while (letter !== 'y' && letter !== 'n' && letter !== '') {
+            console.log("Please enter y or n");
+            letter = await this.ask("Do you want to play again? (y/N) ");
+        }
+        switch (letter) {
+            case 'y':
+                this.flush();
+                await this.startGame();
+                break;
+            default:
+                console.log("Bye bye!");
+                process.exit(0);
+                break;
+        }
     }
 }

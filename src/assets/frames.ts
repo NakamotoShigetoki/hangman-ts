@@ -1,5 +1,3 @@
-import {Letter} from "../classes/interfaces/Letter";
-
 const FRAMES: Array<String> = [
     `#                           #
 #                           #
@@ -67,7 +65,6 @@ const FRAMES: Array<String> = [
 #                           #`
 ]
 const HEADER: string = "########## Hangman ##########"
-const EMPTYFRAME: string = "#                           #"
 const FOOTER: Function = (steps: number) => `########## ${steps} steps ##########`;
 
 const WORDFRAME = (word: string): string => {
@@ -80,5 +77,5 @@ const WORDFRAME = (word: string): string => {
 }
 
 export const generateFrame = (steps: number, word: string): string => {
-    return `${HEADER}\n${FRAMES[7-steps]}\n${EMPTYFRAME}\n${WORDFRAME(word)}\n${FOOTER(steps)}`
+    return `${HEADER}\n${FRAMES[7-steps]}\n${WORDFRAME(word)}\n${FOOTER(steps)}`
 }
