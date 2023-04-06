@@ -78,6 +78,7 @@ export class GameManager {
     private async checkLetter(letter: string): Promise<boolean> {
         let toReturn = false;
         for (let i = 0; i < this.word.length; i++) {
+            console.log(`${this.word[i].letter.toLowerCase() === letter.toLowerCase()} ${this.word[i].letter.toLowerCase()} ${letter.toLowerCase()}}`)
             if (this.word[i].letter.toLowerCase() === letter.toLowerCase()) {
                 this.word[i].status = true;
                 toReturn = true;
@@ -92,11 +93,11 @@ export class GameManager {
     }
 
     private async checkLose(): Promise<boolean> {
-        return this.stepsLeft === 0;
+        return this.stepsLeft <= 0;
     }
 
     private async printStatus(end = false): Promise<void> {
-        console.clear();
+        //console.clear();
         console.log(`${generateFrame(this.stepsLeft, await this.printWord(end))}\n`);
     }
 
@@ -115,6 +116,7 @@ export class GameManager {
         if(letter.length > 1) {
             await this.play(GameStatus.MORE_THAN_ONE_LETTER);
         }
+        letter = letter.toLowerCase();
         if(this.alreadyGuessed.has(letter.toLowerCase())) {
             await this.play(GameStatus.ALREADY_GUESSED);
         }
